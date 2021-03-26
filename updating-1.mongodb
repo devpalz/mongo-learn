@@ -1,0 +1,111 @@
+use ('userData')
+
+// You can update one document, or many documents at the same time.
+
+// If you want to update a user
+
+var chrisId = db.users.findOne({name: 'Chris'})._id
+
+// by default adds or updates
+db.users.updateOne(
+    {
+        _id: chrisId
+    },
+    {
+        $set: { // simply defines some changes that mongoDb evaluates and then changes the existing document by overwriting the listed fields
+            hobbies: ['new hobbies', 'new']
+        }
+    }
+)
+
+
+db.users.updateOne(
+    {
+        _id: chrisId
+    },
+    {
+        $set: { // simply defines some changes that mongoDb evaluates and then changes the existing document by overwriting the listed fields
+            hobbies: ['new hobbies', 'new'],
+            age: 30,
+            phoneNumber: 12343434343434
+        }
+    }
+)
+
+
+// Update many
+db.users.updateMany(
+    {
+        "hobbies.title": "Sports"
+    },
+    {
+        $set:{
+            isSporty: true
+        }
+    }
+)
+
+// Mongo handles increment for you
+db.users.updateOne(
+    {
+        name: 'Manuel'
+    },
+    {
+        $inc: {
+          age: 1
+        },
+        $set:{
+            newField: 'hello'
+        }
+    }
+)
+
+// set some field with a criteria
+
+db.users.updateOne(
+    {
+        name: 'Chris'
+    },
+    {
+        $min: {
+            age: 35
+        }
+    }
+)
+
+
+// getting rid of fields
+db.users.updateMany(
+    {
+        isSporty: true
+    }, 
+    {
+        $unset: {
+            phoneNumber: ''
+        }
+    }
+)
+
+
+// You don't know if the data was saved, if it has already been created you want to update it
+// we want either update, or insert, you will get an 'upsertedId' 
+db.users.updateOne(
+    {
+        name: 'Maria'
+    },
+    {
+        $set: {
+            age: 29,
+            hobby: [
+                {
+                    title: 'food',
+                    frequency: 3
+                }
+            ],
+            isSporty: true
+        }
+    },
+    {
+        upsert: true
+    }
+)

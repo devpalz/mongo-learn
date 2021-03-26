@@ -1,0 +1,51 @@
+/**
+If you know you application to expect the 'title' to be a string then schema validation can help you.
+
+
+If you add a schema validation, then Mongo DB will validate the incoming data, mongo will either accept or reject a write on the database.
+
+You can determine what validation levels you want.
+
+
+ */
+
+ 
+ use ('blog')
+
+ db.posts.drop()
+
+ db.createCollection('posts', {validator: {$jsonSchema: {
+     bsonType: "object",
+     required: ["title", "text", "creator", "comments"],         // absolutely required, if you try and add data without these error/warning
+     properties: {
+         title: {
+             bsonType: 'string', // link to mongo db types here, only strings accepted!
+             description: 'must be a string, and is required'
+         },
+           text: {
+             bsonType: 'string', // link to mongo db types here, only strings accepted!
+             description: 'must be a string, and is required'
+         },
+           creator: {
+             bsonType: 'objectId', // link to mongo db types here, only strings accepted!
+             description: 'must be an object id, and is required'
+         },
+         comments:{
+             bsonType: 'array',
+             description: 'must be an array and required',
+             items: {
+                 bsonType: "object", // must be a document
+                 required: ['text', 'author'],
+                 properties: {
+                     text: {
+                         bsonType: 'string',
+                         description: 'must be string and required'
+                     }
+                 }
+             }
+         }
+     }
+ }}})
+
+// You will get an error telling you that you failed validation!
+db.posts.insertOne({title: 'My first Post'})

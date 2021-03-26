@@ -1,0 +1,73 @@
+
+
+// MongoDB Playground
+// To disable this template go to Settings | MongoDB | Use Default Template For Playground.
+// Make sure you are connected to enable completions and to be able to run a playground.
+// Use Ctrl+Space inside a snippet or a string literal to trigger completions.
+
+// Select the database to use.
+use('patients');
+
+// The drop() command destroys all data from a collection.
+// Make sure you run it against proper database and collection.
+db.patientData.drop();
+
+
+// Insert a few documents into the sales collection.
+db.patientData.insertMany([
+ {
+        'firstName': 'Chris',
+        'lastName': 'Hollands',
+        'age': 24,
+        'history': [
+            {
+                'disease': 'cold',
+                'treatment': 1
+            },
+            {
+                'disease': 'awesomeness',
+                'treatment': 0
+            }            
+        ]
+    },
+     {
+        'firstName': 'Harry',
+        'lastName': 'Hollands',
+        'age': 24,
+        'history': [
+            {
+                'disease': 'cold',
+                'treatment': 1
+            },
+            {
+                'disease': 'awesomeness',
+                'treatment': 0
+            }            
+        ]
+    },
+     {
+        'firstName': 'Craig',
+        'lastName': 'Hollands',
+        'age': 24,
+        'history': [
+            {
+                'disease': 'cold',
+                'treatment': 1
+            },
+            {
+                'disease': 'awesomeness',
+                'treatment': 0
+            }            
+        ]
+    }
+]);
+
+
+// Update the chris document, this completely overrides the history
+db.patientData.updateOne({firstName: 'Chris'}, {$set: { lastName: 'renamed', history: [{ 'disease': 'fixed' }] }})
+
+// Find a patient older than 10
+db.patientData.find({age: {$gt: 10}})
+
+// Delete any patients which have the disease cold, note the use of the dot notation
+db.patientData.deleteMany({"history.disease": "cold"})

@@ -1,0 +1,84 @@
+use ('contactData')
+
+db.users.insertMany(
+  [
+    {
+      name: "Max",
+      email: "max@test.com"
+    },
+    {
+      name: "Manu"
+
+    }
+  ]
+)
+
+db.users.createIndex(
+    {
+        email: 1
+    }
+)
+
+db.users.dropIndex(
+    {
+        email: 1
+    }
+)
+
+// now lets make the email unique
+db.users.createIndex(
+    {
+        email: 1
+    },
+    {
+        unique: true
+    }
+)
+
+// duplicate key, because the non existing field null will be stored in the index
+db.users.insertOne(
+    {
+        name: "Anna"
+    }
+)
+
+// non existing value still is treated in the index, so be careful of that.
+
+
+// If you want an index on email, but allow the field to be empty
+db.users.createIndex(
+    {
+        email: 1
+    },
+    {
+        unique: true,
+        partialFilterExpression: {
+            email: {
+                $exists: true
+            }
+        }
+    }
+    
+)
+
+
+/** A time to live index */
+// Very cool for self destroying data, such a user sessions
+
+db.sessions.insertOne(
+    {
+        data: "important",
+        createdAt: new Date()
+    }
+)
+
+db.sessions.createIndex(
+    {
+        createdAt: 1
+    },
+    {
+        expireAfterSeconds: 10 // every element removed after 10 seconds of the index
+    }
+)
+
+// above means you can maintain a collection of documents that destroy themselves after a given time

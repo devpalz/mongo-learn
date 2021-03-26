@@ -1,0 +1,31 @@
+use ('movieData')
+
+db.movies.find(
+    {
+        "rating.average": {
+            $gt: 9
+        }
+    },
+    {
+        genres: {
+            $slice: 2   // only return the first two genres
+        },
+        name: 1
+    }
+)
+
+
+
+db.movies.find(
+    {
+        "rating.average": {
+            $gt: 9
+        }
+    },
+    {
+        genres: {
+            $slice: [1,2]  // skip first item, and return 2 items
+        },
+        name: 1
+    }
+)

@@ -1,0 +1,103 @@
+use ('user')
+
+db.users.insertMany([
+    {
+        name: 'Chris',
+        phoneNumber: 12323453443,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 1
+            },
+            {
+                title: 'cooking',
+                frequency: 6
+            }            
+        ]
+    },
+    {
+        name: 'Sbug',
+        phoneNumber: '12323453443',
+        age: 23,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 3
+            },
+            {
+                title: 'cooking',
+                frequency: 7
+            },
+            {
+                title: 'sleeping',
+                frequency: 7
+            }                        
+        ]
+    },
+    {
+        name: 'bob',
+        phoneNumber: '12323453443',
+        age: null,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 3
+            },
+            {
+                title: 'yoga',
+                frequency: 3
+            },
+            {
+                title: 'sleeping',
+                frequency: 7
+            }                        
+        ]
+    }    
+])
+
+// You want to find all people with an age field
+// this will also bring back null.
+db.users.find({
+    age: {
+        $exists: true
+    }
+})
+
+// This checks not null. This makes sure you really only get the document with a value in the field.
+db.users.find({
+    age: {
+        $exists: true,
+        $ne: null
+    }
+})
+
+
+db.users.find({
+    age: {
+        $exists: true,
+        $gt: 30
+    }
+})
+
+
+/** type */
+// Above we have some phone numbers that are string and some that are numbers
+// check docs for the available types
+db.users.find({
+    phoneNumber: {
+        $type: "number" // alias for floats and integers 
+    }
+})
+
+db.users.find({
+    phoneNumber: {
+        $type: "double" // would also work even though we didnt use decimals, as the shell is javascript you insert a number, it is stored as a floating point number, a double
+    }
+})
+
+
+db.users.find({
+    phoneNumber: {
+        $type: ["double", "string"] // bring back documents that are a double or string
+    }
+})

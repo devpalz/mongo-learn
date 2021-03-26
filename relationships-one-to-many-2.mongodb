@@ -1,0 +1,22 @@
+// One to many, splitting 
+
+// Collection of cities, and a collection that holds all the citizens of that city. 
+
+// One city has many citizens, one citizen belongs to one city. 
+
+
+// From an application perspective, you may want to get all the cities, but not get all the citizens, as there are millions of citizens.
+// For big cities you may hit the 16MB limit. 
+
+
+use ('cityData')
+
+// Just the metadata in the cities collection
+db.cities.insertOne({name: "New York", coordinates: {lat: 21, lng: 22}})
+
+
+db.citizens.insertMany([{name: "chris", cityId: "New York"}, {name: "sbug", cityId: "New York"}])
+
+
+// Now you wont hit 16 MB limit for the city
+// You can get just the cities and their metadata if you want

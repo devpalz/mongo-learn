@@ -1,0 +1,91 @@
+use ('users')
+
+
+db.users.insertMany([
+    {
+        name: 'Chris',
+        phoneNumber: 12323453443,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 1
+            },
+            {
+                title: 'cooking',
+                frequency: 6
+            }            
+        ]
+    },
+    {
+        name: 'Sbug',
+        phoneNumber: '12323453443',
+        age: 23,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 3
+            },
+            {
+                title: 'cooking',
+                frequency: 7
+            },
+            {
+                title: 'sleeping',
+                frequency: 7
+            }                        
+        ]
+    },
+    {
+        name: 'bob',
+        phoneNumber: '12323453443',
+        age: null,
+        hobbies: [
+            {
+                title: 'sports',
+                frequency: 3
+            },
+            {
+                title: 'yoga',
+                frequency: 3
+            },
+            {
+                title: 'sleeping',
+                frequency: 7
+            }                        
+        ]
+    }    
+])
+
+// How do we search on the hobbies? We need to use dot notation
+db.users.find({
+    "hobbies.title": "sports"
+})
+
+
+/** $size */
+
+// Find all users with two hobbies
+// Cant look for 'greater than 3' currently.
+db.users.find({hobbies: {
+    $size: 3
+}})
+
+
+/** all */
+use ('boxOffice')
+// Exactly thriller and action, but I dont car about the order..
+db.movieStarts.find({
+  genre: {$all: ["action", "thriller"]}
+})
+
+use ('users')
+
+// This matches the 'and' on the specific document and normal and could be all documents with title sport and all docouments with a frequency of 1
+db.users.find({
+    hobbies: {
+        $elemMatch: {
+            title: "sports",
+            frequency: 1
+        }
+    }
+})

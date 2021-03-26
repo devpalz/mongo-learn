@@ -1,0 +1,44 @@
+
+use('companyData')
+
+db.companies.drop()
+
+// javascript (shell is based upon js) you think the 33 is an integer. In JS it doesnt differentiate between integers and floating point numbers (33)
+// it will be stored as a double, a float. A normal floating point number.
+
+// If you look at funding you will see the record in mongo is not the same. This is because you tried to store a number larger than 64 bit. Super big
+// numbers will have to be stored as a string.
+db.companies.insertOne(
+    {
+        name: 'Fresh Apples Inc',
+        isStartup: true,
+        employees: 33,
+        funding: 12345678901234567890,
+        details: {ceo: 'chris'},
+        tags: ['new'],
+        foundingDate: new Date(),
+        insertedDat: new Timestamp()
+    }
+)
+
+/**
+ * Not all languages suffer from the size problem below..
+ * It is worth checking.
+  * Lecture 39 for info.
+ */
+
+// By default will be stored as a 64 bit floating point number
+db.numbers.insertOne({a: 1})
+// Have a look at the db.stat using the console to see the average data size..
+
+// Now clean up
+db.numbers.deleteMany({})
+
+// This will create a int 32 value (not the 64 bit floating)
+db.numbers.insertOne({a: NumberInt(1)})
+
+
+/**
+ * You can see the type of a field on the shell
+ */
+ typeof db.numbers.findOne().a

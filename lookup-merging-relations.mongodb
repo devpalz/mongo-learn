@@ -1,0 +1,19 @@
+// The loop up operator, it ues the aggregate method, we will cover that later. 
+// Lookup will fetch two related documents and merge - it mitgates some of the disadvantage of splitting.
+// You can atleast merge in one go
+
+
+use('shop')
+
+var chrisAuthor = db.authors.insertOne({name: "chris", age: 24}).insertedId
+var sbugAuthor = db.authors.insertOne({name: "sbug", age: 24}).insertedId
+
+
+db.books.insertOne({name: 'My fav books', authors: [chrisAuthor, sbugAuthor]})
+
+
+db.books.aggregate([{$lookup: {from: "authors", localField: "authors", foreignField: "_id", as: "creators"}}])
+
+
+// This is very useful for merging data in one step. This costs more performance than embedded, however, if you are using references, this lookup step can 
+// help you get the data you need.

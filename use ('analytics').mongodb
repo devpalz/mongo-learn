@@ -1,0 +1,152 @@
+use('analytics')
+
+// With aggregate we do not have to perform compelx merging on the client side
+
+// returns you a cursor
+db.persons.aggregate(
+    // array as series of steps
+    [
+        // step 1
+        {
+            $match: { // same as the find method
+                gender: 'female'
+            }
+        },
+        // step 2
+        {
+            $group: {   // let us group by the states, merges our document into new documents
+                _id: {
+                    state: "$location.state" // $ means a field of a document that is passed into the group stage.
+                },
+                totalPersons: { // add a new field to the output document
+                    $sum: 1 // for every document that is grouped together, sum wil increment
+                }
+            }
+        },
+        // step 3
+        {
+            $sort: {
+                totalPersons: -1
+            }
+        }
+    ]
+)
+
+
+
+//** Pipeline that finds people that are over 50, group  by gender, how many people you have per gender, and the averarge age */
+db.persons.aggregate(
+    [
+        // step 1: find people over 50
+        {
+            $match: {
+                "dob.age": {
+                    $gt: 50
+                }
+            }
+        },
+        // step 2: 
+        {
+            $group: {
+                _id: { // the id field of our new document
+                    gender: "$gender"
+                },
+                total: {
+                    $sum: 1
+                },
+                average: {
+                    $avg: "$dob.age"
+                }
+            }
+        }
+    ]
+)
+
+
+db.persons.aggregate(
+    [
+        {
+            $project: {     // same as in the find method, we can transform the collection
+                _id: 0,
+                gender: 1,
+                fullName: {
+                    $concat: ["$name.first", " ", "$name.last"]
+                }
+
+            }
+        }
+    ]
+)
+
+// pass more complex transformations to the concat
+db.persons.aggregate(
+    [
+        {
+            $project: {     // same as in the find method, we can transform the collection
+                _id: 0,
+                gender: 1,
+                fullName: {
+                    $concat: [{ $toUpper: "$name.first" }, " ", { $toUpper: "$name.last" }]
+                }
+
+            }
+        }
+    ]
+)
+
+// Run toUpper only on the first character
+db.persons.aggregate(
+    [
+        {
+            $project: {     // same as in the find method, we can transform the collection
+                _id: 0,
+                gender: 1,
+                email: 1,
+                birthday: "$dob.date", 
+                birthdayConvert:{   // could use the mongo helper for simple transforms, but this way gives you onError and onNull
+                    $convert: {
+                        input: "$dob.date",
+                        to: "date"
+                    }
+                },
+                age: "$dob.age",
+                fullName: {
+                    $concat: [
+                        {
+                            $toUpper:
+                            {
+                                $substrCP: ["$name.first", 0, 1]
+                            }
+                        },
+                        {
+                            $substrCP:
+                                ["$name.first", 1, { $subtract: [{ $strLenCP: "$name.first" }, 1] }]
+                        },
+                        " ",
+                        {
+                            $toUpper: "$name.last"
+                        }
+                    ]
+                }
+            }
+         
+        },
+        {
+            $group: {
+                _id: {
+                    birthYear: {
+                        $isoWeekYear: "$birthdayConvert"
+                    }
+                },
+                number: {
+                    $sum: 1
+                }
+            }
+        },
+        {
+            $sort: {
+                number: -1
+            }
+        }
+    ]
+)

@@ -1,0 +1,1 @@
+mongoimport --username root --password example users.json -d userData -c users --jsonArray --drop --authenticationDatabase admin

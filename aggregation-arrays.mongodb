@@ -1,0 +1,156 @@
+use ('friendData')
+
+// We push the hobbies array into a new array called allHobbies
+db.friends.aggregate(
+    [
+        {
+            $group: {
+                _id: {
+                    age: "$age"
+                },
+
+                allHobbies: {
+                    $push: "$hobbies"
+                }
+            }
+        }
+    ]
+)
+
+// What if you wanted ot push the values from an existing array into a new array?
+
+// Unwind flattens the array but repeating the document 
+db.friends.aggregate(
+    [
+        {
+            $unwind: "$hobbies"
+        }
+    ]
+)
+
+db.friends.aggregate(
+    [
+        {
+            $unwind: "$hobbies"
+        },
+
+        {
+            $group: {
+                _id: {
+                    age: "$age"
+                },
+
+                allHobbies: {
+                    $push: "$hobbies"
+                }
+            }
+        }
+    ]
+)
+
+// The above still has duplicate values, what can we do about that?
+// We can use the add to set operator.
+db.friends.aggregate(
+    [
+        {
+            $unwind: "$hobbies"
+        },
+
+        {
+            $group: {
+                _id: {
+                    age: "$age"
+                },
+
+                allHobbies: {
+                    $addToSet: "$hobbies"
+                }
+            }
+        }
+    ]
+)
+
+/** Slice projections */
+db.friends.aggregate(
+    [
+        {
+            $project: {
+                _id: {
+                    examScore: {
+                        $slice: ["$examScores", 1]  // the first
+                    }
+                }
+            }
+        }
+
+    ]
+)
+
+
+db.friends.aggregate(
+    [
+        {
+            $project: {
+                _id: {
+                    examScore: {
+                        $slice: ["$examScores", -2] // the last two 
+                    }
+                }
+            }
+        }
+
+    ]
+)
+
+db.friends.aggregate(
+    [
+        {
+            $project: {
+                _id: {
+                    examScore: {
+                        $slice: ["$examScores", 2,1] // Start at position 2 and give me 1 element
+                    }
+                }
+            }
+        }
+
+    ]
+)
+
+// Getting the length of the array and storing in a field
+db.friends.aggregate(
+    [
+        {
+            $project: {
+                _id: 0,
+                numScores: {
+                    $size: "$examScores"
+                }
+            }
+        }
+
+    ]
+)
+
+// 
+
+// Getting the length of the array and storing in a field
+db.friends.aggregate(
+    [
+        {
+            $project: {
+                _id: 0,
+                examScores: {
+                    $filter: {
+                        input: "$examScores",
+                        as: "sc", // filter variable, local
+                        cond: {
+                            $gt: ["$$sc.score", 60] // check that the sc variable is greater than 60, $$
+                        }
+                    }   
+                }
+            }
+        }
+
+    ]
+)

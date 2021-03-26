@@ -1,0 +1,15 @@
+// A person owning a car, 1 car per person, 1 person per car.
+// We could model this with an embedded relationship
+
+use ('carData')
+
+db.persons.insertOne({name: "Chris", salary: 40000, car: {model: "BMW", price: 40000}})
+
+// Maybe we are using analytics, our use case is to analysis the person, we may want to do averaging on the person and or the car.
+// We would have an application driven reason to split the above data. 
+// If we are ONLY interestd in the cars, no need to fetch any cars. 
+
+
+// Here we split them up
+var danId = db.persons.insertOne({name: "Dan", salary: 200000}).insertedId
+db.cars.insertOne({model: "bmw", price: 300000, owner: danId})

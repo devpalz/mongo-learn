@@ -1,0 +1,80 @@
+use ('userData')
+
+// $ placeholder, you have a query that selects a specic element in an array and you want to update that.
+db.users.updateMany(
+
+    {
+        hobbies: {
+            $elemMatch: {
+                title: "Sports", 
+                frequency: {
+                    $gte: 3
+                }
+            }
+        }
+    },
+    {
+        $set: {
+            // I only want to update the element in hobbies that matched the above 
+            "hobbies.$.highFrequency": true
+        }
+    }
+)
+
+
+
+db.users.updateMany(
+    {
+        "hobbies.frequency": {
+            $gt: 2
+        }
+    },
+    {
+        $set: {
+            "hobbies.$.highFrequency": true // the dot notation only changes the first element in an array...
+        }
+    }
+)
+
+
+// update all elements in an array using the $[] notation
+db.users.updateMany(
+    {
+        age: {
+            $gt: 30
+        }
+    },
+    {
+        $inc: {
+            "hobbies.$[].frequency" : -1
+        }
+    }
+)
+
+// You want to find all hobbies with a frequency greater than 2
+db.users.find({
+    "hobbies.frequency": {
+        $gt: 2
+    }
+})
+
+db.users.updateMany(
+    {
+        "hobbies.frequency": {
+            $gt: 2
+        }        
+    },
+    {
+        $set: {
+            "hobbies.$[el].goodFrequency": true
+        }
+    },
+    {
+        arrayFilters: [
+            {
+                "el.frequency": {
+                    $gt: 2
+                }
+            }
+        ]
+    }

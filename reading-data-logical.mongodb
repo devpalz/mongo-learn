@@ -1,0 +1,113 @@
+use('movieData')
+
+// rating is either lower than 5 or greater than 9
+
+// Running the queries separate
+db.movies.find({
+    "rating.average":{
+        $lt: 5
+    }
+})
+
+db.movies.find({
+    "rating.average":{
+        $gt: 9.3
+    }
+})
+
+// Running query with or
+db.movies.find({
+    $or: [
+        {
+            "rating.average": {
+                $lt: 5
+            }
+        },
+        {
+            "rating.average": {
+                $gt: 9.3
+            }
+        }
+    ]
+})
+
+
+// nor = return all documents where neither of the conditions are met
+
+// so, higher than 5, but not higher than 9.3
+db.movies.find({
+    $nor: [
+        {
+            "rating.average": {
+                $lt: 5
+            }
+        },
+        {
+            "rating.average": {
+                $gt: 9.3
+            }
+        }
+    ]
+})
+
+
+/** and query */
+db.movies.find({
+    $and: [
+        {
+          "rating.average": {
+              $gt: 9
+          }
+        },
+        {
+            genres: "Drama"
+
+        }
+    ]
+})
+
+// And is the default, so you don't have to use the above.
+db.movies.find({
+    "rating.average": {
+        $gt: 9
+    },
+    genres: "Drama"
+})
+
+// There is the and operator for a reason though
+// The second genre replaces the first one
+// not valid in all languages, duplicate field
+// this query is bad if you want to look for a genre with both drama and horror.
+db.movies.find({
+    genres: "Drama", genres: "Horror" 
+})
+
+db.movies.find({
+    $and: [
+        {
+            genres: "Drama"
+        },
+        {
+            genres: "Horror"
+        }
+    ]
+})
+
+
+/** $not operator */
+
+// Look for movies that dont have a runtime of 60
+db.movies.find({
+    runtime: {
+        $not: {
+            $eq: 60
+        }
+    }
+})
+
+// Usually you would use the below, there are already custom build queries so you dont have to use the not operator.
+db.movies.find({
+    runtime: {
+        $ne: 60
+    }
+})

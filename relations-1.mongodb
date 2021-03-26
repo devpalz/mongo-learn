@@ -1,0 +1,26 @@
+use('hospital')
+
+db.patients.drop()
+db.diseaseSummaries.drop()
+
+db.patients.insertOne({name: "Chris", age: 29, diseaseSummary: "summary-chris-1"})
+
+// We could have created this FIRST, then taken the auto generated id and used it above.
+db.diseaseSummaries.insertOne({_id: "summary-chris-1", diseases: ["cold", "sad", "broken leg"]})
+
+
+
+// Example of finding all the information that pertains to one of the patients
+var dsid = db.patients.findOne({name: 'Chris'}).diseaseSummary
+var chrisDiseaseSummary = db.diseaseSummaries.findOne({_id: dsid})
+
+// Bad that we take two steps, if you have a huge collection of patients and disease summaries, this may not be optimal. 
+
+
+// In this case, we have a strong one to one relation, so a better way is to use an embedded object
+db.patients.insertOne({name: "Chris", age: 29, diseaseSummary: {diseases: ["cold", "broken leg", "sad"]}})
+
+// Now my query will get all the data I need about a patient, so it is more optimal.
+
+
+// STRONG ONE TO ONE = EMBEDDED

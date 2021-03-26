@@ -1,0 +1,14 @@
+use ('movieData')
+
+db.movies.find().sort({"rating.average":1})
+
+
+db.movies.find().sort({"rating.average":1, runtime: -1})
+
+
+// we can skip, we could have pages. If user goes to page 2, we want to skip page one.
+db.movies.find().skip(100).sort({"rating.average":1})
+
+// We can limit
+db.movies.find().sort({"rating.average":1}).skip(100).limit(1)
+

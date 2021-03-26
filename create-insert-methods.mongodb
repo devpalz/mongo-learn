@@ -1,0 +1,85 @@
+use('contactData')
+
+
+/**
+ insertOne and insertMany are the methods to use. 
+ insert() is deprecated.
+ */
+
+db.persons.insertOne({
+    name: "Chris",
+    age: 24,
+    hobbies: ["coding"]
+})
+
+db.persons.insertMany([
+    {
+        name: "Chris2",
+        age: 25,
+        hobbies: ["tidying"]
+    },
+    {
+        name: "Sophie",
+        age: 24,
+        hobbies: ["sleeping"]
+    }
+])
+
+// Maybe you need a shorter _id, or an _id from another dataset.
+db.hobbies.insertMany([
+    {
+        name: "sports"
+    },
+    {
+        name: "cars"
+    }
+])
+
+
+// Maybe you need a shorter _id, or an _id from another dataset.
+db.hobbies.insertMany([
+    {
+        _id: "sports"
+    },
+    {
+        _id: "cars"
+    },
+    {
+        _id: "cooking"
+    }
+])
+
+// We would get a duplicate key error here, however, running and walking will be added.
+// This is the default behaviour.
+db.hobbies.insertMany([
+    {
+        _id: "running"
+    },
+    {
+        _id: "walking"
+    },
+    {
+        _id: "cooking"
+    }
+])
+
+
+// We can change the above behaviour
+
+db.hobbies.insertMany([
+    {
+        _id: "running"
+    },
+    {
+        _id: "walking"
+    },
+    {
+        _id: "cooking"
+    }
+], {
+    ordered: false  // documents will be inserted on the server in an arbitary order, possibly in parallel, and all document inserts
+                    // will be attempted
+})
+
+// A rollback will not happen here. 
+

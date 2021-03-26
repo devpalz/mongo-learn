@@ -1,0 +1,23 @@
+use ('movieData')
+
+db.movies.findOne()
+
+// find returns a cursor to us
+db.movies.find().pretty()
+
+
+
+db.movies.find({
+    name: "The Last Ship"
+})
+
+
+// Here you get all
+db.movies.find({
+    runtime: 60
+})
+
+// Here you will only get 1
+db.movies.findOne({
+    runtime: 60
+})

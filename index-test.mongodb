@@ -1,0 +1,94 @@
+user ('textIndex')
+
+
+/** Text Index is special
+  If we want to search the text, you can use teh regex, this has a very low performance.
+  Better is to use a text index. 
+  Turns the text into an array of single words. It removes stop words such as 'is' and 'a'. The keywords matter. 
+   */
+
+
+db.products.insertMany(
+    [
+        {
+            title: 'A book',
+            description: 'this is an awesome book about a awesome artist!'
+        },
+        {
+            title: 'A red t-shirt',
+            description: 'this t shirt is rad and red and it is pretty awesome!!'
+        }
+    ]
+)
+
+// Lets create an index
+db.products.createIndex(
+    {
+        description: "text" // this is special, rather than the 1
+    }
+)
+
+// Text index is expensive, you do not specifiy description, you just search for text on the collection.
+db.products.find(
+    {
+        $text: {
+            $search: "book"
+        }
+    }
+)
+
+db.products.find(
+    {
+        $text: {
+            $search: "red book" // search for red and book in the data
+        }
+    }
+)
+
+db.products.find(
+    {
+        $text: {
+            $search: "\"red book\"" // search exactly the phrase
+        }
+    }
+)
+
+
+/** Sorting text index  */
+// We can find out how mongo scores its results
+db.products.find(
+    {
+        $text: {
+            $search: "awesome t-shirt" // search exactly the phrase
+        }
+    },
+    {
+        score: {
+            $meta: "textScore"  // mongo manges this
+        }
+    }
+).sort({
+    score: {
+        $meta: "textScore"
+    }
+})
+
+/** You can only have 1 text index per collection.  */
+// However, when you create the index you can provide multiple fields and they will be combined by mongo
+db.products.createIndex(
+    {
+        title: "text",
+        description: "text"
+    }
+)
+
+/** You can use text indexes to exclude */
+db.products.find(
+    {
+        $text: {
+            $search: "-book" // the minus is the exclude
+        }
+    }
+)
+
+

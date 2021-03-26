@@ -1,0 +1,6 @@
+// insertOne can error. If you have a document with embedded fields, some of the fields end up in the database files, but others are not
+// because the server had an issue.
+// Maybe name and age is saved, but hobbies is not.
+
+// Mongo gurantees you an atomic transition. Either succeds as a whole, or fails as a whole. You wont have partial document, includes all. 
+

@@ -1,0 +1,1 @@
+mongoimport --username root --password example tv-shows.json -d movieData -c movies --jsonArray --drop --authenticationDatabase admin

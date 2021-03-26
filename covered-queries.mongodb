@@ -1,0 +1,30 @@
+use ('demo1')
+
+db.customers.insertMany(
+    [
+        {
+            name: 'Max',
+            age: 29,
+            salary: 3000
+        },
+        {
+            name: 'Manu',
+            age: 30,
+            salary: 4000
+        }        
+    ]
+)
+
+db.customers.createIndex(
+    {
+        name: 1
+    }
+)
+
+db.customers.explain("executionStats").find()
+
+// When can documents be 0, because we need to return a document?
+// You can use projection, only return the fields that are the index field
+db.customers.explain("executionStats").find({name: 'Max'}, {_id: 0, name: 1})
+
+// allPlansExecution will show you details stats for rejected plans, how will an idnex on a compound vs just indexed on the name. 

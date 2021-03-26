@@ -1,0 +1,72 @@
+// Check the docs for all the comparators
+
+use('movieData')
+
+// Equal
+db.movies.find({
+    runtime: {
+        $eq: 60
+    }
+})
+
+// Not equal
+db.movies.find({
+    runtime: {
+        $ne: 60
+    }
+})
+
+// less than
+db.movies.find({
+    runtime: {
+        $lt: 40
+    }
+})
+
+// less than or equal
+db.movies.find({
+    runtime: {
+        $lte: 42
+    }
+})
+
+
+// query an embedded field
+db.movies.find({
+    "rating.average": {
+        $gt: 7
+    }
+})
+
+// query an array
+// Equality for an array means that the array includes the given element
+db.movies.find({
+    genres: "Drama"
+})
+
+// if you want exact equality with an array
+db.movies.find({
+    genres: ["Drama"]
+})
+
+
+
+/** in and nin */
+
+// Finds us all documents with a runtime of 30 or 42.
+db.movies.find({
+    runtime: {
+        $in: [
+            30, 42
+        ]
+    }
+})
+
+// nin: not in
+db.movies.find({
+    runtime: {
+        $nin: [
+            30, 42
+        ]
+    }
+})

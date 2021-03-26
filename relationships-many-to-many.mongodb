@@ -1,0 +1,30 @@
+// Many to many
+
+// A customer could buy many products, and one product could be purchased by many customers, how to model?
+
+// Many to many will often be done my references
+
+
+use('shop')
+
+// The sql approach 
+var bookId = db.products.insertOne({title: 'A book', price: 12.99}).insertedId
+var customerId = db.customers.insertOne({name: 'Chris', age: 29}).insertedId
+db.orders.insertOne({productId: bookId, customerId: customerId})
+
+
+
+
+// We can do better in MongoDB, we could use two tables. 
+db.orders.drop()
+
+// Relationship makes sense that the orders are attached to a customer
+db.customers.updateOne({}, {$set: {orders: [{productId: bookId, quantity: 10}]}})
+
+// We have added metadata to reference the product. 
+
+// You would often use references, however, you could change the orders array above to embed the actual product. A disadvantage is the 
+// data duplication, In the shop example you may not worry about duplicating the data as it is a 'snapshot', the price is 'snapshotted'. This obviously
+// depends on your application, you might always need the latest data, in which case you should use a reference. 
+
+// Think how do you fetch your data, and how often? May duplicates be fine?

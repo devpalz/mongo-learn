@@ -1,0 +1,49 @@
+/**
+ Your write may first end up in memory (faster than working with disc)
+ Data is eventually stored to the disc. 
+
+ w: 1 -> How many instances you want the write to be acknowledge. 
+ j: undefined -> journal, like a todo file. Operations that have not been completed yet, operations that the storage engine needs to do but hastnt yet.
+                 If the server goes down, the journal remains and if you recover, the engine can look into the file
+                 As the memory could be wiped.
+                 A back up todo list. 
+
+Journal is a signal line, writing into the database files is a more complex process so it takes longer. 
+
+The default is the journal is not getting used. 
+
+
+
+j: true -> only report a success to me when it is acknowledged and has been written to the journal.
+
+wtimeout: 200 -> which timeframe do you give the server to report a write to you? 
+
+Enabling the journal means writes take longer, because you have to wait for the server to acknowledge. You need to make this decision.
+
+ */
+
+/*
+w: 0 -> super fast, would be happy if data did not end up in the database. Because server doesn't have a chance to write to memory and return id to you.
+*/
+
+ use ('personData')
+
+// Below we have higher security because we are sure it has been written to the journal
+ db.persons.insertOne(
+    {
+        name: "Chris"
+    },
+    {
+        writeConcern: {w: 1, j: true}
+    }
+ )
+
+// A low timeout means if the network slows down the write will fail.
+ db.persons.insertOne(
+    {
+        name: "Chris2"
+    },
+    {
+        writeConcern: {w: 1, j: true, wtimeout: 1}
+    }
+ )

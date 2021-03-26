@@ -1,0 +1,55 @@
+// Schema and relation example project - A blog
+
+/**
+
+User
+_id
+name
+age
+email
+
+
+
+Post
+_id
+title
+text
+tags
+
+
+
+Comment
+_id
+text
+
+User can create a post.
+User can comment on a post.
+A post can have multiple comments.
+
+
+You could have 1 collection and embed everything. In the post you have the user data, and the comments. 
+
+A comment always belongs to 1 post.
+
+Nesting the user is a bad idea, one user can create many posts, so if the email changes you are in trouble. 
+
+
+Create a Users collection and a Posts collection.
+
+
+ */
+
+
+ use ('blog')
+
+
+ db.users.insertMany([{name: "Chris", age: 24, emailAddress: "email@email.com"}, {name: "Sophie", age: 24, emailAddress: "email@email.com"}])
+
+var chrisId = db.users.findOne({name: "Chris"})._id
+var sophieId = db.users.findOne({name: "Sophie"})._id
+
+
+ db.posts.insertOne({title: 'My first Post', text: 'my first post a long text', tag: ['newtag'], creator: chrisId, comments: [
+     {text: "I agree", author: sophieId}
+ ]}
+ )

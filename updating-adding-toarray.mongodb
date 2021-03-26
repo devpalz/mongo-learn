@@ -1,0 +1,44 @@
+use ('userData')
+
+db.users.updateOne(
+    {
+        name: 'Anna'
+    },
+    {
+        $push: {
+            hobbies: {
+                title: "Sports", 
+                frequency: 2
+            }
+        }
+    }
+)
+
+
+
+db.users.updateOne(
+    {
+        name: 'Anna'
+    },
+    {
+        $push: {
+            hobbies:{
+                $each: [
+                    {
+                        title: "good wine2",
+                        frequency: 6
+                    },
+                    {
+                        title: "hiking2",
+                        frequency: 1
+                    }                    
+                ]
+            }
+        }
+    },
+    {
+        $sort: {
+            frequency: -1
+        }
+    }
+)

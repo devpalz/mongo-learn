@@ -1,0 +1,21 @@
+/** We have question threads, each thread has a couple of answers 
+ an answer belongs to one thread, but a thread has many answers
+ */
+
+
+ use ('support')
+
+ db.questionThreads.insertOne({creator: "chris", question: "How does it work?"})
+
+ // We could use a separate collection for the questions, and then link the questions above. 
+ //  db.questionThreads.insertOne({creator: "chris", question: "How does it work?", answers: ["q1-id", "q2-id"]})
+
+
+// Is embedding the better solution?
+
+ db.questionThreads.insertOne({creator: "chris", question: "How does it work?", answers: [
+     {text: "Like that"},
+     {text: "thanks."}
+ ]})
+
+// Likely is in this case, you often will want to get all the answers to a question.

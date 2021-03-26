@@ -1,0 +1,139 @@
+use ('contactData')
+
+db.contacts.find(
+    {
+        "dob.age": {
+            $gt: 60
+        }
+    }
+)
+
+
+db.contacts.find(
+    {
+        "dob.age": {
+            $gt: 60
+        }
+    }
+).explain("executionStats")
+
+
+// Add index on the age
+db.contacts.createIndex(
+    {
+        "dob.age": 1 // or -1 is descending, doesn't matter too much
+    }
+)
+
+// If you reexecute the query you will see it has been sped up, check the executionTime in the output for proof!
+
+
+
+// Searching for 20, this means that we will be returning a lot of our data, as most people are over 20. With the index you will see this is slower
+// because you first have to go through the index, and then you have to pull out the documents.
+db.contacts.find(
+    {
+        "dob.age": {
+            $gt: 20
+        }
+    }
+).explain("executionStats")
+
+// If you queries return 10/20% index will speed you up a lot. If your queries are going to return a lot of your data, an index will slow you down.
+
+
+// You can create index on fields that have some text.
+// For gender you typically have 2 values, so for every query you will likely find 50% of your data, so not great.
+// db.contacts.createIndex(
+//     {
+//         "gender": 1 // or -1 is descending, doesn't matter too much
+//     }
+// )
+
+// Say you want to find all people older than 30 and male. We can create a compouund index
+db.contacts.createIndex(
+    {   
+        "dob.age": 1,
+        gender: 1
+    }
+)
+
+// This query will see a great improvement
+db.contacts.explain().find(
+    {
+        "dob.age": 35,
+        gender: "male"
+    }
+)
+// Again, compouund index will be used for just querying on the age
+db.contacts.explain().find(
+    {
+        "dob.age": 35
+    }
+)
+
+// Compound index is sorted left to right, so if you have field a,b,c,d then the index can be used for queries that look for:
+// a, a and b, a and b and c, or a and b and c and d    - you cant just used d to speed up your query.
+// (33, male), (33, male), (33, female) -the male and female are only sorted in their place on the age.
+
+
+
+
+/** Indexs can help you with sorting */
+// Index will be used for both age and gender.
+db.contacts.explain().find(
+    {
+        "dob.age": 35
+    }
+).sort(
+    {
+        gender: 1
+    }
+)
+
+// MongoDB has an max of 32mb on sorting. On large datasets you could fetch so many documents that the inmemory sort will fail.
+
+
+// See existing index
+db.contacts.getIndexes()
+
+// Can help you as a developer to make sure you do not have duplicate. Maybe, you want to make sure you have a unique email across your collection.
+db.contacts.createIndex(
+    {
+        email: 1
+    },
+    {
+        unique: true
+    }
+)
+
+
+//** Maybe you want a partial index */
+// Say you want to hit the over 60 queries hard, and are happy for a collection scan for people under 60 we can use a partial query
+
+db.contacts.createIndex(
+    {
+        "dob.age": 1
+    },
+    {
+        partialFilterExpression: {
+            "dob.age": {
+                $gt: 60
+            }
+        }
+    }
+)
+
+// will use partial
+db.contacts.find(
+    {
+        "dob.age": {
+            $gt: 12
+        }
+    }
+).explain()
+
+// partial will mean you have a smaller index, so you take less of a hit for inserts
+
+
+
